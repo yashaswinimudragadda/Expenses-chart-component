@@ -1,0 +1,310 @@
+
+
+
+Skip to content
+Using Gmail with screen readers
+Conversations
+27% of 15 GB used
+Terms · Privacy · Program Policies
+Last account activity: 6 minutes ago
+Details
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
+  <title>Frontend Mentor | Expenses chart component</title>
+
+  <style>
+    /* Import the font family required by the style guide */
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap');
+
+    :root {
+      /* Primary color variables for bars and highlights */
+      --red-500: hsl(10, 79%, 65%);
+      --blue-300: hsl(186, 34%, 65%);
+
+      /* Neutral color variables for text and backgrounds */
+      --brown-950: hsl(25, 47%, 15%);
+      --brown-400: hsl(28, 10%, 53%);
+      --red-100: hsl(26, 66%, 93%);
+      
+      /* Set the default font stack */
+      --font-main: 'DM Sans', sans-serif;
+    }
+
+    /* Standard CSS reset to ensure consistent sizing across browsers */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Body layout to center the component on the screen */
+    body {
+      font-family: var(--font-main);
+      font-size: 18px;
+      background-color: var(--red-100);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* Main container sizing and spacing */
+    main {
+      width: 100%;
+      max-width: 540px; /* Limits width on desktop */
+      display: flex;
+      flex-direction: column;
+      gap: 20px; /* Space between the header and the body block */
+      padding: 20px;
+    }
+
+    /* Top balance section styling */
+    .header-block {
+      background-color: var(--red-500);
+      color: white;
+      padding: 25px;
+      border-radius: 20px;
+    }
+
+    /* Flex container for the balance text and logo */
+    .element-block {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Responsive font scaling for the balance amount */
+    .header-block h4 {
+      font-size: clamp(1.5rem, 5vw, 2rem);
+      margin-top: 5px;
+    }
+
+    /* Main chart card styling */
+    .body-block {
+      background-color: white;
+      padding: 40px;
+      border-radius: 20px;
+      color: var(--brown-950);
+    }
+
+    /* Heading for the spending section */
+    .body-block h2 {
+      font-size: clamp(1.5rem, 4vw, 2rem); 
+      margin-bottom: 30px;
+      font-weight: 700;
+    }
+
+    /* The flex container that holds all 7 bars */
+    .chart-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end; /* Aligns bars to the bottom */
+      height: 200px;
+      margin-bottom: 30px;
+    }
+
+    /* Wrapper for individual bar, its tooltip, and day label */
+    .bar-wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      width: 12%;
+      height: 100%;
+      position: relative; /* Necessary for absolute positioning of tooltip */
+    }
+
+    /* Individual bar styling */
+    .bar {
+      width: 100%;
+      background-color: var(--red-500);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: opacity 0.3s, background-color 0.3s;
+    }
+
+    /* Dim the bar on hover */
+    .bar:hover {
+      opacity: 0.7;
+    }
+
+    /* Cyan color for the current day's bar */
+    .bar.active {
+      background-color: var(--blue-300);
+    }
+
+    /* Hidden tooltip containing the dollar amount */
+    .tooltip {
+      display: none; /* Hidden by default */
+      position: absolute;
+      top: -35px; /* Positioned above the bar */
+      background-color: var(--brown-950);
+      color: white;
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* Show the tooltip when the user hovers over the bar wrapper */
+    .bar-wrapper:hover .tooltip {
+      display: block;
+    }
+
+    /* Style for the day strings (mon, tue, etc.) */
+    .day-label {
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--brown-400);
+    }
+
+    /* Horizontal line separator */
+    hr {
+      border: none;
+      border-top: 2px solid var(--red-100);
+    }
+
+    /* Layout for the month total and percentage change */
+    .footer-block {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 30px;
+    }
+
+    /* Label text in the footer */
+    .total-this-month p {
+      color: var(--brown-400);
+      font-size: 0.9375rem;
+      margin-bottom: 5px;
+    }
+
+    /* Large monthly total amount */
+    .total-this-month h1 {
+      font-size: clamp(1.875rem, 8vw, 3rem);
+      color: var(--brown-950);
+    }
+
+    /* Percentage container styling */
+    .difference {
+      text-align: right;
+      padding-bottom: 10px;
+    }
+
+    /* Percentage number styling */
+    .difference strong {
+      display: block;
+      color: var(--brown-950);
+      font-size: 1.125rem;
+    }
+
+    /* Percentage label text */
+    .difference p {
+      color: var(--brown-400);
+      font-size: 1rem;
+    }
+
+    /* Adjustments for mobile device widths (375px) */
+    @media (max-width: 375px) {
+      .body-block {
+        padding: 20px;
+      }
+      .total-this-month h1 {
+        font-size: 2rem;
+      }
+    }
+
+    /* Branding and project links at the bottom */
+    .attribution { font-size: 11px; text-align: center; margin-top: 20px; }
+    .attribution a { color: hsl(228, 45%, 44%); }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="header-block">
+      <div class="element-block">
+        <div class="text-elements">
+          <p>My balance</p>
+          <h4>$921.48</h4>
+        </div>
+        <img src="./images/logo.svg" alt="logo">
+      </div>
+    </section>
+
+    <section class="body-block">
+      <h2>Spending - Last 7 days</h2> 
+      <div id="char-container" class="chart-container"></div>
+      <hr>
+      <div class="footer-block">
+        <div class="total-this-month">
+          <p>Total this month</p>
+          <h1>$478.33</h1>
+        </div>
+        <div class="difference">
+          <strong>+2.4%</strong>
+          <p>from last month</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="attribution">
+      <a href="/index.html">Back to homepage</a>. 
+      Coded by <a href="#">YashaswiniMudragadda</a>.
+    </div>
+  </main>
+
+  <script>
+    /* Ensure the DOM is fully loaded before running the script */
+    document.addEventListener("DOMContentLoaded", () => {
+      
+      /* Async function to fetch spending data and render the bars */
+      async function renderChart() {
+        try {
+          /* Fetch data from the local JSON file */
+          const response = await fetch('./data.json');
+          const data = await response.json();
+          
+          /* Get a reference to the chart container */
+          const container = document.getElementById('char-container');
+
+          /* Calculate the highest amount to determine relative heights */
+          const maxAmount = Math.max(...data.map(item => item.amount));
+
+          /* Identify the current day of the week to highlight it */
+          const dayIndex = new Date().getDay();
+          const weekDays = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+          const today = weekDays[dayIndex];
+
+          /* Map over the data array and build HTML strings for each bar */
+          container.innerHTML = data.map(item => {
+            /* Height is calculated as a percentage of the max amount */
+            const heightPercentage = (item.amount / maxAmount) * 100;
+            
+            /* Apply 'active' class only if the day matches today */
+            const isToday = item.day === today ? 'active' : '';
+
+            /* Return the template literal for the bar structure */
+            return `
+              <div class="bar-wrapper">
+                <div class="tooltip">$${item.amount}</div>
+                <div class="bar ${isToday}" style="height:${heightPercentage}%"></div>
+                <p class="day-label">${item.day}</p>
+              </div>`;
+          }).join(''); /* Join the array into a single string for innerHTML */
+          
+        } catch (error) {
+          /* Log any errors if the fetch or parsing fails */
+          console.error('Error loading chart data:', error);
+        }
+      }
+      
+      /* Execute the function to draw the chart */
+      renderChart();
+    });
+  </script>
+</body>
+</html>
